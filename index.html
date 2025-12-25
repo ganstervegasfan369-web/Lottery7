@@ -1,0 +1,293 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Professional Slot Lottery</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Oswald:wght@600&display=swap');
+
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#020617,#000);
+  font-family:Montserrat;
+  color:white;
+}
+
+.app{
+  max-width:1200px;
+  margin:10px auto;
+  border:10px solid #facc15;
+  background:#000;
+}
+
+/* TITLES */
+.top{
+  font-size:52px;
+  text-align:center;
+  padding:14px;
+  background:linear-gradient(270deg,red,orange,yellow,green,cyan,blue,violet);
+  background-size:600% 600%;
+  animation:rainbow 6s linear infinite;
+  text-shadow:2px 2px 0 #000;
+}
+.sub{
+  font-size:32px;
+  text-align:center;
+  padding:10px;
+  background:#1e3a8a;
+  border-top:4px solid #000;
+  border-bottom:4px solid #000;
+}
+@keyframes rainbow{
+  from{background-position:0%}
+  to{background-position:100%}
+}
+
+/* STAGE */
+.stage{
+  position:relative;
+  background:linear-gradient(180deg,#d1d5db,#f8fafc);
+  padding:30px 80px;
+}
+
+/* RIBBONS */
+.ribbon{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:70px;
+  background:#dc2626;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:28px;
+  font-weight:800;
+  writing-mode:vertical-rl;
+}
+.left{left:0}
+.right{right:0}
+
+/* SLOT FRAME */
+.frame{
+  position:relative;
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  padding:20px;
+  background:linear-gradient(180deg,#9ca3af,#e5e7eb);
+  border:8px solid #374151;
+  box-shadow:inset 0 0 25px rgba(0,0,0,.5);
+  overflow:hidden;
+}
+
+/* SLOT */
+.slot{
+  width:90px;
+  height:160px;
+  background:linear-gradient(180deg,#111,#555);
+  border:6px solid #000;
+  overflow:hidden;
+  position:relative;
+}
+.slot::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.2),transparent 70%);
+}
+
+.reel{
+  position:absolute;
+  width:100%;
+}
+
+.reel div{
+  height:160px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:Oswald;
+  font-size:104px;
+  background:#fff;
+  color:#000;
+  border-bottom:2px solid #ccc;
+}
+
+/* CELEBRATION INSIDE */
+.flash{
+  animation:flash 0.4s ease-in-out infinite alternate;
+}
+@keyframes flash{
+  from{box-shadow:inset 0 0 10px gold}
+  to{box-shadow:inset 0 0 30px gold}
+}
+
+/* INFO */
+.info{
+  background:#facc15;
+  color:#000;
+  display:flex;
+  justify-content:space-between;
+  font-size:26px;
+  padding:14px;
+  font-weight:800;
+}
+
+/* ADMIN */
+.admin{
+  background:#020617;
+  padding:16px;
+  border-top:6px solid #facc15;
+}
+.admin input,.admin button{
+  padding:10px;
+  font-size:18px;
+  margin:5px;
+}
+
+/* CONFETTI */
+.confetti{
+  position:absolute;
+  width:10px;
+  height:10px;
+  animation:fall 2.8s linear forwards;
+}
+@keyframes fall{
+  to{transform:translateY(260px) rotate(720deg)}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<div class="top" id="topText">AMERICAN ONLINE LOTTERY</div>
+<div class="sub" id="subText">LION KING – DAILY DRAW</div>
+
+<div class="stage">
+  <div class="ribbon left" id="leftRibbon">LION KING</div>
+  <div class="ribbon right" id="rightRibbon">LION KING</div>
+
+  <div class="frame" id="frame"></div>
+</div>
+
+<div class="info">
+  <div>Date: <span id="date"></span></div>
+  <div>Time: <span id="time">8:00 PM</span></div>
+  <div id="venue">OFFICIAL LIVE</div>
+</div>
+
+<div class="admin">
+<h3>Advanced Admin Controls</h3>
+
+<input id="force" placeholder="Force Result (5 digits)">
+<button onclick="spin()">SPIN</button>
+<button onclick="spinRandom()">RANDOM</button><br>
+
+<label>Spin Speed</label><input type="range" id="speed" min="60" max="120" value="80">
+<label>Stop Delay</label><input type="range" id="delay" min="300" max="700" value="450"><br><br>
+
+<input oninput="topText.textContent=this.value" placeholder="Top Title">
+<input oninput="subText.textContent=this.value" placeholder="Sub Title">
+<input oninput="leftRibbon.textContent=this.value" placeholder="Left Ribbon">
+<input oninput="rightRibbon.textContent=this.value" placeholder="Right Ribbon">
+<input oninput="venue.textContent=this.value" placeholder="Venue Text">
+
+</div>
+</div>
+
+<script>
+const frame=document.getElementById('frame');
+const reels=[];
+const slots=5;
+
+for(let i=0;i<slots;i++){
+  const s=document.createElement('div');
+  s.className='slot';
+  const r=document.createElement('div');
+  r.className='reel';
+  for(let d=0;d<10;d++){
+    const e=document.createElement('div');
+    e.textContent=d;
+    r.appendChild(e);
+  }
+  s.appendChild(r);
+  frame.appendChild(s);
+  reels.push(r);
+}
+
+const audio=new AudioContext();
+
+/* SMOOTH METAL CLICK */
+function metalClick(){
+  const o=audio.createOscillator();
+  const g=audio.createGain();
+  o.type='sine';
+  o.frequency.value=300;
+  g.gain.value=0.05;
+  o.connect(g).connect(audio.destination);
+  o.start();
+  setTimeout(()=>o.stop(),40);
+}
+
+/* ANNOUNCER */
+function announce(num){
+  const u=new SpeechSynthesisUtterance(
+    "The winning number is " + num.split('').join(' ')
+  );
+  u.volume=1;
+  u.rate=0.9;
+  u.pitch=0.85;
+  speechSynthesis.speak(u);
+}
+
+/* CONFETTI INSIDE */
+function celebrate(){
+  frame.classList.add('flash');
+  for(let i=0;i<80;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.style.left=Math.random()*100+'%';
+    c.style.top='0';
+    c.style.background=`hsl(${Math.random()*360},100%,50%)`;
+    frame.appendChild(c);
+    setTimeout(()=>c.remove(),3000);
+  }
+  setTimeout(()=>frame.classList.remove('flash'),2000);
+}
+
+function spinWithResult(result){
+  reels.forEach((r,i)=>{
+    let pos=0;
+    const run=setInterval(()=>{
+      pos=(pos+1)%10;
+      r.style.transform=`translateY(-${pos*160}px)`;
+      metalClick();
+    },speed.value);
+
+    setTimeout(()=>{
+      clearInterval(run);
+      r.style.transform=`translateY(-${result[i]*160}px)`;
+      if(i===reels.length-1){
+        celebrate();
+        announce(result);
+      }
+    },900+i*delay.value);
+  });
+}
+
+function spin(){
+  const v=force.value;
+  spinWithResult(/^\d{5}$/.test(v)?v:random());
+}
+function spinRandom(){spinWithResult(random())}
+function random(){
+  return Math.floor(Math.random()*100000).toString().padStart(5,'0');
+}
+
+date.textContent=new Date().toLocaleDateString();
+</script>
+</body>
+</html>
